@@ -7,6 +7,26 @@ const analyser = audioCtx.createAnalyser();
 
 import {users} from './data';
 
+function levenstein(a, string) {
+    var b = string + "", m = [], i, j, min = Math.min;
+
+    if (!(a && b)) return (b || a).length;
+
+    for (i = 0; i <= b.length; m[i] = [i++]);
+    for (j = 0; j <= a.length; m[0][j] = j++);
+
+    for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+            m[i][j] = b.charAt(i - 1) == a.charAt(j - 1)
+                ? m[i - 1][j - 1]
+                : m[i][j] = min(
+                    m[i - 1][j - 1] + 1, 
+                    min(m[i][j - 1] + 1, m[i - 1 ][j] + 1))
+        }
+    }
+
+    return m[b.length][a.length];
+}
 
 export function App (sources) {
 
@@ -14,11 +34,14 @@ export function App (sources) {
       .speech
       .map(event => [].map.call(event.results[0], res => res.transcript))
       .map(results => results.map(t => t.toLowerCase()))
-      .debug("results")
+      .debug("res")
       .map(results =>
-            users.filter(user => results.filter(text => text === user.name.toLowerCase()).length > 0)
+            users.map(user => Object.assign({}, user, {
+                dist: Math.min(...results.map(text => levenstein(user.name.toLowerCase(), text)))
+            }))
         )
-      .filter(users => users.length > 0)
+      .map(userMatches => userMatches.sort((u1, u2) => u1.dist - u2.dist))
+      .debug("matches")
       .map(([user]) => div("found the user : " + user.name))
 
   const sinks = {
