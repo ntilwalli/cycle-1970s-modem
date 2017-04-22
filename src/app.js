@@ -1,14 +1,17 @@
-import {div} from '@cycle/dom'
+import {div, img} from '@cycle/dom'
 import xs from 'xstream'
+import {last, pipe, map, reverse} from 'ramda';
 
 const audioCtx = new AudioContext();
 const analyser = audioCtx.createAnalyser();
 
-const usersImages = [
-    "felix",
-    "salut",
-    "bonjour"
-]
+// const usersImages = [
+//     "felix",
+//     "salut",
+//     "bonjour"
+// ]
+
+import {users} from './data';
 
 function startMicrophone(stream){
     const source = audioCtx.createMediaStreamSource(stream);
@@ -52,14 +55,31 @@ export function App (sources) {
 
   const fft$ = userAudioMedia$
       .flatten()
-      .debug("fft")
       .map(fft => fft.reduce((acc, value) => acc + value))
-      .map(sum => sum % usersImages.length)
+      .map(sum => sum % users.length)
+      .fold((acc, next) => acc.concat([next]), []);
 
   const vtree$ = fft$
-  .map(index => div(usersImages[index]))
+    .map(userIds => {
+        const user = users[last(userIds)] || {};
+        console.log(userIds.map(id => users[id].name))
+
+        return div([
+            div('.currentuser', [
+                div('.name', user.name),
+                div('.name', user.handle),
+                img('.image', {attrs: {src: user.src}}),
+            ]),
+            div(pipe(reverse, map(id => User(users[id])))(userIds)),
+        ]);
+    });
+
   const sinks = {
       DOM: vtree$
   }
   return sinks
+}
+
+function User(user = {}) {
+  return div('.olduser', img('.image', {attrs: {src: user.src, width: 100, height: 100}}));
 }
