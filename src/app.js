@@ -28,9 +28,22 @@ function levenstein(a, string) {
     return m[b.length][a.length];
 }
 
-export function App (sources) {
+const deepStatements = [
+    ' is motherfucking deep as shit',
+    ' is hot as a motherfuck',
+    ' is motherfucking smart as hell',
+    ' motherfucking loves programming in cycle',
+    ' doesn\'t like motherfucking vegetables',
+    ' is a deep motherfucker',
+    ' is scared of motherfucking robots'
+]
 
-  const vtree$ = sources
+function getDeepStatement() {
+    return deepStatements[Math.floor(Math.random() * deepStatements.length)]
+}
+
+export function App (sources) {
+  const user$ = sources
       .speech
       .map(event => [].map.call(event.results[0], res => res.transcript))
       .map(results => results.map(t => t.toLowerCase()))
@@ -42,11 +55,14 @@ export function App (sources) {
         )
       .map(userMatches => userMatches.sort((u1, u2) => u1.dist - u2.dist))
       .debug("matches")
+
+  const vtree$ = user$
       .map(([user]) => div("found the user : " + user.name))
 
   const sinks = {
       DOM: vtree$,
-      speech: xs.of(1)
+      speech: user$.startWith(1),
+      synthesis: user$.map(([user]) => user.name + getDeepStatement())
   }
   return sinks
 }

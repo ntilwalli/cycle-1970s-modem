@@ -1,0 +1,3 @@
+[submodule "cycle-audio-graph"]
+	path = cycle-audio-graph
+	url = https://github.com/ntilwalli/cycle-audio-graph

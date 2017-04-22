@@ -25,11 +25,26 @@ function makeSpeechRecognitionDriver() {
     }
 }
 
+function makeSpeechSynthesisDriver() {
+    return function (command$) {
+        const synth = window.speechSynthesis
+        
+        return command$
+            .subscribe({
+                next: utterance => {
+                    synth.speak(new SpeechSynthesisUtterance(utterance))
+                }
+            })
+    }
+}
+
+
 const main = App
 
 const drivers = {
   DOM: makeDOMDriver('#app'),
-  speech: makeSpeechRecognitionDriver()
+  speech: makeSpeechRecognitionDriver(),
+  synthesis: makeSpeechSynthesisDriver()
 }
 
 run(main, drivers)
