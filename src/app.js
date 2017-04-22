@@ -7,66 +7,19 @@ const analyser = audioCtx.createAnalyser();
 
 import {users} from './data';
 
-function startMicrophone(stream){
-    const source = audioCtx.createMediaStreamSource(stream);
-    source.connect(analyser);
-
-    analyser.fftSize = 256;
-    var bufferLength = analyser.frequencyBinCount;
-    var dataArray = new Uint8Array(bufferLength);
-
-
-    var timerId;
-    const fft$ = xs.create({
-        start: (listener) => {
-            function draw() {
-                analyser.getByteFrequencyData(dataArray)
-
-                listener.next(dataArray)
-            }
-            timerId = setInterval(draw, 1000)
-        },
-
-        stop: () => {
-            clearInterval(timerId)
-        }
-    })
-
-    return fft$
-}
-
-const userAudioMedia$ = xs.create({
-    start: listener => {
-        navigator.getUserMedia({audio: true},
-            stream => { listener.next(startMicrophone(stream)) } ,
-            console.error.bind(console)
-        )
-    },
-    stop: _ => {}
-})
 
 export function App (sources) {
 
-  const fft$ = userAudioMedia$
-      .flatten()
-      .map(fft => fft.reduce((acc, value) => acc + value))
-      .debug("volume")
-      .filter(volume => volume > 5000)
-      .map(sum => sum % users.length)
-      .fold((acc, next) => acc.concat([next]), []);
-
-  const vtree$ = fft$
-    .map(userIds => {
-        const user = users[last(userIds)] || {};
-
-        return div([
-            div('.currentuser', [User({user})]),
-            div('.oldusers', reverse(userIds).map((id, idx) => User({first: idx === 0, hideName: true, user: users[id]}))),
-        ]);
-    });
+  const vtree$ = sources
+      .speech
+      .map(event => [].map.call(event.results[0], res => res.transcript))
+      .debug("ok")
+      .filter(results => results.filter(text => text.match(/ok.*cycle/i)).length > 0)
+      .map(_ => div("you said: OK Cycle"))
 
   const sinks = {
-      DOM: vtree$
+      DOM: vtree$,
+      speech: xs.empty()
   }
   return sinks
 }
