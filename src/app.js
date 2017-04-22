@@ -26,7 +26,7 @@ function startMicrophone(stream){
     const fft$ = xs.create({
         start: (listener) => {
             function draw() {
-                analyser.getByteTimeDomainData(dataArray)
+                analyser.getByteFrequencyData(dataArray)
 
                 listener.next(dataArray)
             }
@@ -56,13 +56,14 @@ export function App (sources) {
   const fft$ = userAudioMedia$
       .flatten()
       .map(fft => fft.reduce((acc, value) => acc + value))
+      .debug("volume")
+      .filter(volume => volume > 5000)
       .map(sum => sum % users.length)
       .fold((acc, next) => acc.concat([next]), []);
 
   const vtree$ = fft$
     .map(userIds => {
         const user = users[last(userIds)] || {};
-        console.log(userIds.map(id => users[id].name))
 
         return div([
             div('.currentuser', [
