@@ -67,11 +67,6 @@ export const users = [
     "name": "David Khourshid"
   },
   {
-    "src": "https://avatars2.githubusercontent.com/u/736697?v=3&s=4000",
-    "handle": "@whitecolor",
-    "name": "Alex"
-  },
-  {
     "src": "https://avatars0.githubusercontent.com/u/249641?v=3&s=4000",
     "handle": "@btipling",
     "name": "Bjorn Tipling"

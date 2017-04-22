@@ -11,22 +11,46 @@
 <body>
   <style>
     .currentuser {
-      margin: 30px;
+      box-sizing: border-box;
+      height: 382px;
+      padding: 30px;
       text-align: center;
     }
 
     .currentuser img {
+      position: absolute;
+      animation: move 1s ease;
       border-radius: 5px;
-      height: 300px;
-      width: 300px;
+      height: 100px;
+      top: 170px;
+      transform: translateX(-50%) scale(3);
+      width: 100px;
     }
-    .olduser {
+
+    .oldusers .user {
       display: inline-block;
       margin: 5px
     }
 
-    .olduser img {
+    .oldusers img {
       border-radius: 5px;
+    }
+
+    .in {
+      opacity: 0;
+    }
+
+    @keyframes move {
+      0% {
+        left: 50%;
+        transform: translate(-50%) scale(3);
+        top: 170px;
+      }
+      100% {
+        left: 0;
+        transform: translate(0%) scale(1);
+        top: 382px;
+      }
     }
   </style>
   <div id="app"></div>

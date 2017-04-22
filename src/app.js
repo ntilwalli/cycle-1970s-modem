@@ -5,12 +5,6 @@ import {last, pipe, map, reverse} from 'ramda';
 const audioCtx = new AudioContext();
 const analyser = audioCtx.createAnalyser();
 
-// const usersImages = [
-//     "felix",
-//     "salut",
-//     "bonjour"
-// ]
-
 import {users} from './data';
 
 function startMicrophone(stream){
@@ -66,12 +60,8 @@ export function App (sources) {
         const user = users[last(userIds)] || {};
 
         return div([
-            div('.currentuser', [
-                div('.name', user.name),
-                div('.name', user.handle),
-                img('.image', {attrs: {src: user.src}}),
-            ]),
-            div(pipe(reverse, map(id => User(users[id])))(userIds)),
+            div('.currentuser', [User({user})]),
+            div('.oldusers', reverse(userIds).map((id, idx) => User({first: idx === 0, hideName: true, user: users[id]}))),
         ]);
     });
 
@@ -81,6 +71,12 @@ export function App (sources) {
   return sinks
 }
 
-function User(user = {}) {
-  return div('.olduser', img('.image', {attrs: {src: user.src, width: 100, height: 100}}));
+function User({first, hideName, user = {}}) {
+    if (first) {
+        console.log(user.name);
+    }
+  return div('.user', user.src ? [
+    ...(hideName ? [] : [div('.name',  `${user.name} ${user.handle}`)]),
+    img(`.image  ${first ? '.in' : ''}`, {attrs: {src: user.src, width: 100, height: 100}, key: new Date()}),
+  ] : []);
 }
