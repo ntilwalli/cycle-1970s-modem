@@ -19,11 +19,11 @@ function makeSpeechRecognitionDriver() {
             recognition.maxAlternatives = 5;
 
             function handle(event) {
-                console.log(event);
                 listener.next(event)
             }
             recognition.onnomatch = handle
             recognition.onstart = handle
+            recognition.onend = handle
             recognition.onerror = handle
             recognition.onspeechend = handle
             recognition.onsoundend = handle
