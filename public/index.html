@@ -14,11 +14,9 @@
       background-color: #ccc;
       border-radius: 50%;
       box-sizing: border-box;
-      position: absolute;
       left: 50%;
-      top: 70px;
+      margin: 0 auto;
       text-align: center;
-      transform: translateX(-50%);
       width: 300px;
       height: 300px;
     }
@@ -41,23 +39,10 @@
     }
 
     .currentuser img {
-      position: absolute;
-      animation: move 3s ease;
+      /*animation: move 3s ease;*/
       border-radius: 5px;
-      height: 100px;
-      left: 50%;
-      top: 170px;
-      transform: translateX(-50%) scale(3);
-      width: 100px;
-    }
-
-    .oldusers .user {
-      display: inline-block;
-      margin: 5px
-    }
-
-    .oldusers img {
-      border-radius: 5px;
+      height: 300px;
+      width: 300px;
     }
 
     .in {
@@ -71,20 +56,11 @@
     }
 
     @keyframes move {
-      50% {
-        left: 50%;
-        transform: translate(-50%) scale(3);
-        top: 170px;
-      }
-      75% {
-        left: 15px;
-        transform: translate(0%) scale(1);
-        top: 442px;
+      0% {
+        opacity: 0;
       }
       100% {
-        left: 15px;
-        transform: translate(0%) scale(1);
-        top: 442px;
+        opacity: 1;
       }
     }
 

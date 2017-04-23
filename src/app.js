@@ -22,14 +22,14 @@ export function App (sources) {
       .map(event => Array.from(event.results[0]).map(res => res.transcript))
       .debug('word');
 
-  const listen$ = words$
-      .map(results => results.filter(text => text.match(/blue/i)).length > 0)
-      .debug('listening')
-      .startWith(false);
+  const activate$ = words$
+      .filter(results => results.filter(text => text.match(/.*hello*./i)).length > 0)
+      .map(() => true)
+      .debug('activating');
 
-  const user$ = words$.compose(sampleCombine(listen$.compose(delay(100))))
-      .filter(([words, listen]) => listen)
-      .map(([results]) => results.map(t => t.toLowerCase()))
+  const user$ = words$
+      .filter(results => results.filter(text => text.match(/.*hello*./i)).length === 0)
+      .map((results) => results.map(t => t.toLowerCase()))
       .map((results) => users.map(user => Object.assign({}, user, {
                 dist: Math.min(...results.map(text => levenstein(user.name.toLowerCase(), text))),
             }))
@@ -37,23 +37,19 @@ export function App (sources) {
       .map(userMatches => userMatches.sort((u1, u2) => u1.dist - u2.dist)[0])
       .debug("user");
 
-  const users$ = user$.fold((acc, user) => acc.concat([user]), []);
-  // listen ----x--------
-  // user   ---------x----
-  // state  iiiillllldddddiiiii
-  const waiting$ = xs.merge(listen$, user$.map(() => false)).startWith(false);
-  const state$ = xs.combine(xs.merge(listen$, user$.compose(delay(3000)).map(() => false)).compose(pairwise), waiting$.compose(pairwise))
-    .map(([activated, waiting]) => {
-        console.log(activated, waiting);
-      if (!activated[0] && !activated[1] && !waiting[0] && !waiting[1]) {
-        return states.idle;
-      }
-
-      return waiting[1] ? states.listening : states.display;
+  const waiting$ = xs.merge(activate$, user$.map(() => false)).startWith(false);
+  const display$ = xs.merge(user$.map(() => false), user$.map(() => true).compose(delay(2000)))
+  const state$ = xs.combine(waiting$, display$)
+    .map(([waiting, display]) => {
+      if (waiting) return states.waiting;
+      if (display) return states.display;
+      return states.idle;
     })
-    .debug('state');
+    .startWith(states.idle)
+    .debug('state')
 
   function getTop(state, user) {
+    console.log(state, user);
     if (states.display === state && user) {
       return div('.currentuser', [User({user})]);
     }
@@ -62,15 +58,11 @@ export function App (sources) {
   }
 
   const vtree$ = xs
-    .combine(state$, users$)
-    .map(([state, users = []]) => {
-        const user = last(users) || {};
-        console.log('displaying user');
-
-        return div([
-            getTop(state, user),
-            div('.oldusers', reverse(users).map((id, idx) => User({first: idx === 0, hideName: true, user: users[idx]}))),
-        ]);
+    .combine(state$, user$)
+    .startWith([states.idle, {}])
+    .debug('vtre')
+    .map(([state, user]) => {
+        return getTop(state, user);
     });
 
   return {

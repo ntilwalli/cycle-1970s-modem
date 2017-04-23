@@ -26,6 +26,7 @@ function makeSpeechRecognitionDriver() {
             recognition.onerror = handleError;
             recognition.onspeechend = handleError;
             recognition.onsoundend = handleError;
+            // recognition.onaudioend = handleError;
             recognition.onresult = (...args) => {
                 console.log(args);
                 listener.next(...args);
