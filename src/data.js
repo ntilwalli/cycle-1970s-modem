@@ -47,6 +47,11 @@ export const users = [
     "name": "Nick Balestra"
   },
   {
+    "src": "http://az616578.vo.msecnd.net/files/2016/03/27/635946416230452853-457653011_kanye-close.jpg",
+    "handle": "@kanye",
+    "name": "Kanye West"
+  },
+  {
     "src": "https://avatars0.githubusercontent.com/u/90512?v=3&s=4000",
     "handle": "@staltz",
     "name": "André Staltz"
