@@ -5,22 +5,39 @@ import xs from 'xstream'
 import fromEvent from 'xstream/extra/fromEvent'
 
 function makeSpeechRecognitionDriver() {
+    function createSpeach() {
+        return xs.create({
+          start: listener => {
+            const recognition = new (
+                window.SpeechRecognition ||
+                window.webkitSpeechRecognition ||
+                window.mozSpeechRecognition ||
+                window.msSpeechRecognition
+            )();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 5;
+
+            const handleError = (...args) => {
+              console.error('error', ...args);
+              createSpeach().subscribe(listener)
+            }
+            recognition.onnomatch = handleError;
+            recognition.onerror = handleError;
+            recognition.onspeechend = handleError;
+            recognition.onsoundend = handleError;
+            recognition.onresult = (...args) => {
+                console.log(args);
+                listener.next(...args);
+            }
+
+            recognition.start();
+          }, stop: () => {}
+        })
+    }
     return function (command$) {
         return command$
-            .map(command => {
-                const recognition = new (
-                    window.SpeechRecognition ||
-                    window.webkitSpeechRecognition ||
-                    window.mozSpeechRecognition ||
-                    window.msSpeechRecognition
-                )();
-                recognition.lang = 'en-US';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 5;
-                recognition.start();
-
-                return fromEvent(recognition, "result");
-            })
+            .map(command => createSpeach())
             .flatten()
     }
 }
