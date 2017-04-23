@@ -46,7 +46,7 @@ export function App (sources) {
       .debug("user");
 
   function getTop(user) {
-    var userDOM = user ? div('.currentuser', [User({user})]) : null;
+    var userDOM = user ? div('.currentuser', [User(user)]) : null;
 
     return div({attrs: {class: `microphone` }}, [
         img('.micro-img', {attrs: {src: './bw-microphone.png'}}),
@@ -69,11 +69,12 @@ export function App (sources) {
   }
 }
 
-function User({first, hideName, user = {}}) {
-  return div('.user', user.src ? [
-    // ...(hideName ? [] : [div('.name',  `${user.name} ${user.handle}`)]),
-    img(`.image  ${first ? '.in' : ''}`, {attrs: {src: user.src, width: 100, height: 100}, key: new Date()}),
-  ] : []);
+function User(user = null) {
+    if (!user) { return [] };
+  return div('.user', [
+    img('.image', {attrs: {src: user.src, width: 100, height: 100}, key: new Date()}),
+    div('.name',  `${user.name} ${user.handle}`)
+  ]);
 }
 
 function levenstein(a, string) {
