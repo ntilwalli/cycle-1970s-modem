@@ -15,8 +15,8 @@ const deepStatements = [
     ' remembers when Cycle was only 200 lines of code',
     ' wishes Cycle and Angular developers could just be friends',
     ' thinks Albert Einstein would have programmed with Cycle',
-    ' thinks CycleLang would be bad ass'
-
+    ' thinks CycleLang would be bad ass',
+    ' has loads of pipes in his basement'
 ]
 
 function getDeepStatement() {
