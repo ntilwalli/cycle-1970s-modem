@@ -18,19 +18,17 @@ function makeSpeechRecognitionDriver() {
             recognition.interimResults = false;
             recognition.maxAlternatives = 5;
 
-            const handleError = (...args) => {
-              //console.error('error', ...args);
-              //createSpeach().subscribe(listener)
+            function handle(event) {
+                console.log(event);
+                listener.next(event)
             }
-            recognition.onnomatch = handleError;
-            recognition.onerror = handleError;
-            recognition.onspeechend = handleError;
-            recognition.onsoundend = handleError;
+            recognition.onnomatch = handle
+            recognition.onstart = handle
+            recognition.onerror = handle
+            recognition.onspeechend = handle
+            recognition.onsoundend = handle
             // recognition.onaudioend = handleError;
-            recognition.onresult = (...args) => {
-                console.log(args);
-                listener.next(...args);
-            }
+            recognition.onresult = handle
 
             recognition.start();
           }, stop: () => {}

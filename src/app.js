@@ -33,8 +33,13 @@ export function App (sources) {
     display: 'display',
   }
 
+  const listening$ = sources
+      .speech
+      .filter(event => event.type === "start")
+
   const words$ = sources
       .speech
+      .filter(event => event.type === "result")
       .map(event => Array.from(event.results[0]).map(res => res.transcript))
       .debug('word');
 
