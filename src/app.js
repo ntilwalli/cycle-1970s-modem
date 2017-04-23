@@ -57,17 +57,16 @@ export function App (sources) {
       .debug("user");
 
   function getTop(user, status) {
-    var userDOM = user ? div('.currentuser', [User(user)]) : null;
+    var userDOM = user ? div('.currentuser', {key: user.name}, [User(user)]) : null;
 
-    console.log('status', status)
-    return div({
+    return div([ 
+        div({
             class: {
                 microphone: true, 
                 listening: status === 'start' ? true : false
-            }
-        }, [
-        img('.micro-img', {attrs: {src: './bw-microphone.png'}}),
-        userDOM
+            },
+        }, img('.micro-img', {attrs: {src: './bw-microphone.png'}})),
+        userDOM,
     ]);
   }
 
@@ -92,7 +91,7 @@ export function App (sources) {
 function User(user = null) {
     if (!user) { return [] };
   return div('.user', [
-    img('.image', {attrs: {src: user.src, width: 100, height: 100}, key: new Date()}),
+    img('.image', {attrs: {src: user.src, width: 100, height: 100}}),
     div('.name',  `${user.name} ${user.handle}`)
   ]);
 }
