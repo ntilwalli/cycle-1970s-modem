@@ -19,8 +19,8 @@ function makeSpeechRecognitionDriver() {
             recognition.maxAlternatives = 5;
 
             const handleError = (...args) => {
-              console.error('error', ...args);
-              createSpeach().subscribe(listener)
+              //console.error('error', ...args);
+              //createSpeach().subscribe(listener)
             }
             recognition.onnomatch = handleError;
             recognition.onerror = handleError;

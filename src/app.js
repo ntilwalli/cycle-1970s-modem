@@ -36,14 +36,8 @@ export function App (sources) {
       .map(event => Array.from(event.results[0]).map(res => res.transcript))
       .debug('word');
 
-  const activate$ = words$
-      .filter(results => results.filter(text => text.match(/.*hello*./i)).length > 0)
-      .map(() => true)
-      .debug('activating');
-
   const user$ = words$
-      .filter(results => results.filter(text => text.match(/.*hello*./i)).length === 0)
-      .map((results) => results.map(t => t.toLowerCase()))
+      .map(results => results.map(t => t.toLowerCase()))
       .map((results) => users.map(user => Object.assign({}, user, {
                 dist: Math.min(...results.map(text => levenstein(user.name.toLowerCase(), text))),
             }))
@@ -51,38 +45,27 @@ export function App (sources) {
       .map(userMatches => userMatches.sort((u1, u2) => u1.dist - u2.dist)[0])
       .debug("user");
 
-  const waiting$ = xs.merge(activate$, user$.map(() => false)).startWith(false);
-  const display$ = xs.merge(user$.map(() => false), user$.map(() => true).compose(delay(2000)))
-  const state$ = xs.combine(waiting$, display$)
-    .map(([waiting, display]) => {
-      if (waiting) return states.waiting;
-      if (display) return states.display;
-      return states.idle;
-    })
-    .startWith(states.idle)
-    .debug('state')
+  function getTop(user) {
+    var userDOM = user ? div('.currentuser', [User({user})]) : null;
 
-  function getTop(state, user) {
-    console.log(state, user);
-    if (states.display === state && user) {
-      return div('.currentuser', [User({user})]);
-    }
-
-    return div({attrs: {class: `microphone ${state === states.listening ? 'listening' : ''}`}}, img('.micro-img', {attrs: {src: './bw-microphone.png'}}));
+    return div({attrs: {class: `microphone` }}, [
+        img('.micro-img', {attrs: {src: './bw-microphone.png'}}),
+        userDOM
+    ]);
   }
 
-  const vtree$ = xs
-    .combine(state$, user$)
-    .startWith([states.idle, {}])
-    .debug('vtre')
-    .map(([state, user]) => {
-        return getTop(state, user);
+  const vtree$ = user$
+      .startWith(null)
+    .map(user => {
+        return div([getTop(user)]);
     });
 
   return {
       DOM: vtree$,
-      speech: words$.startWith(),
-      synthesis: user$.map(user => user.name + getDeepStatement())
+      synthesis: user$.map(user => user.name + getDeepStatement()),
+      speech: sources.DOM
+      .select(".microphone")
+      .events("click")
   }
 }
 
