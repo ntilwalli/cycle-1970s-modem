@@ -10,6 +10,20 @@ const analyser = audioCtx.createAnalyser();
 
 import {users} from './data';
 
+const deepStatements = [
+    ' is motherfucking deep as shit',
+    ' is hot as a motherfuck',
+    ' is motherfucking smart as hell',
+    ' motherfucking loves programming in cycle',
+    ' doesn\'t like motherfucking vegetables',
+    ' is a deep motherfucker',
+    ' is scared of motherfucking robots'
+]
+
+function getDeepStatement() {
+    return deepStatements[Math.floor(Math.random() * deepStatements.length)]
+}
+
 export function App (sources) {
   const states = {
     idle: 'idle',
@@ -68,6 +82,7 @@ export function App (sources) {
   return {
       DOM: vtree$,
       speech: words$.startWith(),
+      synthesis: user$.map(user => user.name + getDeepStatement())
   }
 }
 
@@ -97,20 +112,6 @@ function levenstein(a, string) {
     }
 
     return m[b.length][a.length];
-}
-
-const deepStatements = [
-    ' is motherfucking deep as shit',
-    ' is hot as a motherfuck',
-    ' is motherfucking smart as hell',
-    ' motherfucking loves programming in cycle',
-    ' doesn\'t like motherfucking vegetables',
-    ' is a deep motherfucker',
-    ' is scared of motherfucking robots'
-]
-
-function getDeepStatement() {
-    return deepStatements[Math.floor(Math.random() * deepStatements.length)]
 }
 
 // export function App (sources) {
