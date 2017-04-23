@@ -11,13 +11,7 @@ const analyser = audioCtx.createAnalyser();
 import {users} from './data';
 
 const deepStatements = [
-    ' is motherfucking deep as shit',
-    ' is hot as a motherfuck',
-    ' is motherfucking smart as hell',
-    ' motherfucking loves programming in cycle',
-    ' doesn\'t like motherfucking vegetables',
-    ' is a deep motherfucker',
-    ' is scared of motherfucking robots'
+    ' thinks front-end is deep shit'
 ]
 
 function getDeepStatement() {
@@ -62,7 +56,11 @@ export function App (sources) {
 
   return {
       DOM: vtree$,
-      synthesis: user$.map(user => user.name + getDeepStatement()),
+      synthesis: user$
+        .map(user => {
+            console.log('saying', user)
+            return user.name + getDeepStatement()
+        }),
       speech: sources.DOM
       .select(".microphone")
       .events("click")

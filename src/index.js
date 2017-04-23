@@ -50,6 +50,7 @@ function makeSpeechSynthesisDriver() {
         return command$
             .subscribe({
                 next: utterance => {
+                    console.log('utterance', utterance)
                     synth.speak(new SpeechSynthesisUtterance(utterance))
                 }
             })
