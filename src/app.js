@@ -11,11 +11,19 @@ const analyser = audioCtx.createAnalyser();
 import {users} from './data';
 
 const deepStatements = [
-    ' thinks front-end is deep shit'
+    ' thinks cycle conf has been amazing',
+    ' remembers when Cycle was only 200 lines of code',
+    ' wishes Cycle and Angular developers could just be friends',
+    ' thinks Albert Einstein would have programmed with Cycle',
+    ' thinks CycleLang would be bad ass'
+
 ]
 
 function getDeepStatement() {
-    return deepStatements[Math.floor(Math.random() * deepStatements.length)]
+
+    const rand = Math.random()
+        console.log('rand', rand)
+    return deepStatements[Math.floor(rand * deepStatements.length)]
 }
 
 export function App (sources) {
