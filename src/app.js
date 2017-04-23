@@ -35,7 +35,11 @@ export function App (sources) {
 
   const listening$ = sources
       .speech
-      .filter(event => event.type === "start")
+      .debug('event')
+      .filter(event => {
+          return event.type === "start" || event.type === "end"
+      })
+      .map(event => event.type)
 
   const words$ = sources
       .speech
@@ -52,19 +56,24 @@ export function App (sources) {
       .map(userMatches => userMatches.sort((u1, u2) => u1.dist - u2.dist)[0])
       .debug("user");
 
-  function getTop(user) {
+  function getTop(user, status) {
     var userDOM = user ? div('.currentuser', [User(user)]) : null;
 
-    return div({attrs: {class: `microphone` }}, [
+    console.log('status', status)
+    return div({
+            class: {
+                microphone: true, 
+                listening: status === 'start' ? true : false
+            }
+        }, [
         img('.micro-img', {attrs: {src: './bw-microphone.png'}}),
         userDOM
     ]);
   }
 
-  const vtree$ = user$
-      .startWith(null)
-    .map(user => {
-        return div([getTop(user)]);
+  const vtree$ = xs.combine(user$.startWith(null), listening$.startWith('end'))
+    .map(([user, status]) => {
+        return div([getTop(user, status)]);
     });
 
   return {
